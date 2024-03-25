@@ -29,21 +29,29 @@ public class App
         //строка опций
         String optionsLine = "";
         if (!options.isEmpty()) {
-            StringBuilder optionsBuffer = new StringBuilder();
-            for (String elem: options) {
-                optionsBuffer.append(elem).append(" ");
+            if (options.size() == 1) {
+                optionsLine = options.get(0);
+            } else {
+                StringBuilder optionsBuffer = new StringBuilder();
+                for (String elem: options) {
+                    optionsBuffer.append(elem).append(" ");
+                }
+                optionsLine = optionsBuffer.toString();
             }
-            optionsLine = optionsBuffer.toString();
         }
 
         //строка аргументов
         String argumentsLine = "";
         if (!arguments.isEmpty()) {
-            StringBuilder argumentsBuffer = new StringBuilder();
-            for (String elem: arguments) {
-                argumentsBuffer.append(elem).append(" ");
+            if (arguments.size() == 1) {
+                argumentsLine = arguments.get(0);
+            } else {
+                StringBuilder argumentsBuffer = new StringBuilder();
+                for (String elem: arguments) {
+                    argumentsBuffer.append(elem).append(" ");
+                }
+                argumentsLine = argumentsBuffer.toString();
             }
-            argumentsLine = argumentsBuffer.toString();
         }
 
         //поиск исполняемой команды
@@ -68,11 +76,27 @@ public class App
     //Команда Unix cat
     public static void catCommand(String optionsLine, String argumentsLine) {
 
-        //System.out.println("cat " + optionsLine + argumentsLine);
-
         try {
-            Process ps = new ProcessBuilder("cat ", optionsLine, argumentsLine).start();
-        } catch (IOException e) {
+            ProcessBuilder ps = new ProcessBuilder("cat");
+
+            if ((Objects.equals(argumentsLine, ""))&&(!Objects.equals(optionsLine, ""))) {
+                ps = new ProcessBuilder("cat", optionsLine);
+            } else if ((!Objects.equals(argumentsLine, ""))&&(Objects.equals(optionsLine, ""))) {
+                ps = new ProcessBuilder("cat", argumentsLine);
+            } else if ((!Objects.equals(argumentsLine, ""))&&(!Objects.equals(optionsLine, ""))){
+                ps = new ProcessBuilder("cat", optionsLine, argumentsLine);
+            }
+            ps.redirectErrorStream(true);
+
+            Process pr = ps.start();
+            BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+            String line;
+            while ((line = in.readLine()) != null) {
+                System.out.println(line);
+            }
+            pr.waitFor();
+            in.close();
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -103,8 +127,26 @@ public class App
     public static void lsCommand(String optionsLine, String argumentsLine) {
 
         try {
-            Process ps = new ProcessBuilder("ls ", optionsLine, argumentsLine).start();
-        } catch (IOException e) {
+            ProcessBuilder ps = new ProcessBuilder("ls");
+
+            if ((Objects.equals(argumentsLine, ""))&&(!Objects.equals(optionsLine, ""))) {
+                ps = new ProcessBuilder("ls", optionsLine);
+            } else if ((!Objects.equals(argumentsLine, ""))&&(Objects.equals(optionsLine, ""))) {
+                ps = new ProcessBuilder("ls", argumentsLine);
+            } else if ((!Objects.equals(argumentsLine, ""))&&(!Objects.equals(optionsLine, ""))){
+                ps = new ProcessBuilder("ls", optionsLine, argumentsLine);
+            }
+            ps.redirectErrorStream(true);
+
+            Process pr = ps.start();
+            BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+            String line;
+            while ((line = in.readLine()) != null) {
+                System.out.println(line);
+            }
+            pr.waitFor();
+            in.close();
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
