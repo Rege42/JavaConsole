@@ -49,11 +49,15 @@ public class App
         //поиск исполняемой команды
         switch (arr[0]) {
             case "cat":
+                System.out.println("Оригинал:");
                 catCommand(optionsLine, argumentsLine);
+                System.out.println("Копия:");
                 catClone(argumentsLine);
                 break;
             case "ls":
+                System.out.println("Оригинал:");
                 lsCommand(optionsLine, argumentsLine);
+                System.out.println("Копия:");
                 lsClone(argumentsLine);
                 break;
             default:
@@ -77,7 +81,7 @@ public class App
 
         if (Objects.equals(argumentsLine, "")) {
             Scanner sc = new Scanner(System.in);
-            while (sc.hasNext()) {                 // while scanner scans something. (ends with Ctrl + D)
+            while (sc.hasNext()) {                 //Ctrl + D
                 String stdin = sc.nextLine();
                 System.out.println(stdin);
             }
