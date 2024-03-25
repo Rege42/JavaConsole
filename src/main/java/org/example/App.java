@@ -38,10 +38,10 @@ public class App
         //поиск исполняемой команды
         switch (arr[0]) {
             case "cat":
-                catCommand(optionsLine, argumentsLine);
+                catCommand(optionsLine.toString(), argumentsLine.toString());
                 break;
             case "ls":
-                lsCommand(optionsLine, argumentsLine);
+                //lsCommand(optionsLine, argumentsLine);
                 break;
             default:
                 System.out.println("Unknown command");
@@ -49,18 +49,20 @@ public class App
     }
 
     //Команда Unix cat
-    public static void catCommand(StringBuilder optionsLine, StringBuilder argumentsLine) {
+    public static void catCommand(String optionsLine, String argumentsLine) {
+
         try {
-            Runtime.getRuntime().exec("cat " + optionsLine + argumentsLine);
+            Process ps = new ProcessBuilder("cat ", optionsLine, argumentsLine).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        //Runtime.getRuntime().exec("cat " + optionsLine + argumentsLine);
     }
 
     //Команда Unix ls
-    public static void lsCommand(StringBuilder optionsLine, StringBuilder argumentsLine) {
+    public static void lsCommand(String optionsLine, String argumentsLine) {
         try {
-            Runtime.getRuntime().exec("ls " + optionsLine + argumentsLine);
+            Process ps = new ProcessBuilder("cat ", optionsLine, argumentsLine).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
