@@ -13,20 +13,21 @@ public class App
 
     public static void main(String[] args) {
 
-        Scanner scanner = new Scanner(System.in);
-        String s = scanner.nextLine();
-        String[] arr = s.split(" ");
+        //System.out.println("Введите команду:");
+        //Scanner scanner = new Scanner(System.in);
+        //String s = scanner.nextLine();
+        //String[] arr = s.split(" ");
 
         ArrayList<String> options = new ArrayList<>();          // массив с опциями
         ArrayList<String> arguments = new ArrayList<>();        // массив с аргументами
 
-        for (int i=1; i< arr.length; i++) {
-            if (arr[i].startsWith("-")) {
-                options.add(arr[i]);
+        for (int i=1; i< args.length; i++) {                     // поиск в введенной строке опций и аргументов
+            if (args[i].startsWith("-")) {
+                options.add(args[i]);
             } else {
-                arguments.add(arr[i]);
+                arguments.add(args[i]);
             }
-        }                 // поиск в введенной строке опций и аргументов
+        }
 
         String optionsLine = "";                                //строка опций
         if (!options.isEmpty()) {
@@ -54,7 +55,7 @@ public class App
             }
         }
 
-        switch (arr[0]) {
+        switch (args[0]) {                                       //поиск исполняемой команды
             case "cat":
                 //System.out.println("Оригинал:");
                 //unixCommand(arr[0], optionsLine, argumentsLine);
@@ -69,7 +70,7 @@ public class App
                 break;
             default:
                 System.out.println("Unknown command");
-        }                                   //поиск исполняемой команды
+        }
     }
 
     // эмуляция команд Unix
@@ -168,7 +169,7 @@ public class App
             }
             System.out.println(lineBuffer);
         }
-        return i;                                               // вовзращает индекс строки дял нумерации
+        return i;                                               // вовзращает индекс строки для нумерации
     }
 
     //Команда Unix ls
