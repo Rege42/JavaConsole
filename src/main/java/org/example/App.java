@@ -1,33 +1,34 @@
 package org.example;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 public class App
 {
+
+    // цветовые настройки текста консоли
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
         String s = scanner.nextLine();
         String[] arr = s.split(" ");
 
-        ArrayList<String> options = new ArrayList<>();
-        ArrayList<String> arguments = new ArrayList<>();
+        ArrayList<String> options = new ArrayList<>();          // массив с опциями
+        ArrayList<String> arguments = new ArrayList<>();        // массив с аргументами
 
-        //поиск в массиве опций и аргументов
         for (int i=1; i< arr.length; i++) {
             if (arr[i].startsWith("-")) {
                 options.add(arr[i]);
             } else {
                 arguments.add(arr[i]);
             }
-        }
+        }                 // поиск в введенной строке опций и аргументов
 
-        //строка опций
-        String optionsLine = "";
+        String optionsLine = "";                                //строка опций
         if (!options.isEmpty()) {
             if (options.size() == 1) {
                 optionsLine = options.get(0);
@@ -40,8 +41,7 @@ public class App
             }
         }
 
-        //строка аргументов
-        String argumentsLine = "";
+        String argumentsLine = "";                              //строка аргументов
         if (!arguments.isEmpty()) {
             if (arguments.size() == 1) {
                 argumentsLine = arguments.get(0);
@@ -54,41 +54,43 @@ public class App
             }
         }
 
-        //поиск исполняемой команды
         switch (arr[0]) {
             case "cat":
-                System.out.println("Оригинал:");
-                catCommand(optionsLine, argumentsLine);
-                System.out.println("Копия:");
-                catClone(argumentsLine);
+                //System.out.println("Оригинал:");
+                //unixCommand(arr[0], optionsLine, argumentsLine);
+                //System.out.println("Копия:");
+                catClone(options, argumentsLine);
                 break;
             case "ls":
-                System.out.println("Оригинал:");
-                lsCommand(optionsLine, argumentsLine);
-                System.out.println("Копия:");
-                lsClone(argumentsLine);
+                //System.out.println("Оригинал:");
+                //unixCommand(arr[0], optionsLine, argumentsLine);
+                //System.out.println("Копия:");
+                lsClone(options, argumentsLine, "");
                 break;
             default:
                 System.out.println("Unknown command");
-        }
+        }                                   //поиск исполняемой команды
     }
 
-    //Команда Unix cat
-    public static void catCommand(String optionsLine, String argumentsLine) {
+    // эмуляция команд Unix
+    public static void unixCommand(String command, String optionsLine, String argumentsLine) {
 
         try {
-            ProcessBuilder ps = new ProcessBuilder("cat");
-
+            // создание команды
+            ProcessBuilder ps = new ProcessBuilder(command);
             if ((Objects.equals(argumentsLine, ""))&&(!Objects.equals(optionsLine, ""))) {
-                ps = new ProcessBuilder("cat", optionsLine);
+                ps = new ProcessBuilder(command, optionsLine);
             } else if ((!Objects.equals(argumentsLine, ""))&&(Objects.equals(optionsLine, ""))) {
-                ps = new ProcessBuilder("cat", argumentsLine);
+                ps = new ProcessBuilder(command, argumentsLine);
             } else if ((!Objects.equals(argumentsLine, ""))&&(!Objects.equals(optionsLine, ""))){
-                ps = new ProcessBuilder("cat", optionsLine, argumentsLine);
+                ps = new ProcessBuilder(command, optionsLine, argumentsLine);
             }
-            ps.redirectErrorStream(true);
 
-            Process pr = ps.start();
+            ps.redirectErrorStream(true);                       // объединение потока ввода с потоком ошибок
+
+            Process pr = ps.start();                            // старт работы команды
+
+            // считывание данных с потока ввода
             BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
             String line;
             while ((line = in.readLine()) != null) {
@@ -96,26 +98,33 @@ public class App
             }
             pr.waitFor();
             in.close();
+
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    public static void catClone(String argumentsLine) {
+    // команда Unix cat
+    public static void catClone(ArrayList<String> options, String argumentsLine) {
 
-        if (Objects.equals(argumentsLine, "")) {
+        int i = 0;                                              // счетчик строк для команд -n и -b
+        String lastLine = "something";                          // значение предыдущей строки для команды -s
+
+        if (Objects.equals(argumentsLine, "")) {             // если файл не предоставлен, то данные читаются с потока ввода
             Scanner sc = new Scanner(System.in);
-            while (sc.hasNext()) {                 //Ctrl + D
-                String stdin = sc.nextLine();
-                System.out.println(stdin);
+            while (sc.hasNext()) {                              // цикл обеспечиваеь конец работы при нажатии Ctrl + D
+                String line = sc.nextLine();
+                i = catOptions(options, line, lastLine, i);
+                lastLine = line;
             }
         } else {
             try {
                 FileReader r = new FileReader(argumentsLine);
                 BufferedReader br = new BufferedReader(r);
                 String line;
-                while ((line = br.readLine()) != null) {
-                    System.out.println(line);
+                while ((line = br.readLine()) != null) {        // цикл чтения данных из файла
+                    i = catOptions(options, line, lastLine, i);
+                    lastLine = line;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -123,49 +132,78 @@ public class App
         }
     }
 
-    //Команда Unix ls
-    public static void lsCommand(String optionsLine, String argumentsLine) {
+    // обработчик функциий команды Unix cat
+    public static int catOptions (ArrayList<String> options, String line, String lastLine, int i) {
 
-        try {
-            ProcessBuilder ps = new ProcessBuilder("ls");
-
-            if ((Objects.equals(argumentsLine, ""))&&(!Objects.equals(optionsLine, ""))) {
-                ps = new ProcessBuilder("ls", optionsLine);
-            } else if ((!Objects.equals(argumentsLine, ""))&&(Objects.equals(optionsLine, ""))) {
-                ps = new ProcessBuilder("ls", argumentsLine);
-            } else if ((!Objects.equals(argumentsLine, ""))&&(!Objects.equals(optionsLine, ""))){
-                ps = new ProcessBuilder("ls", optionsLine, argumentsLine);
-            }
-            ps.redirectErrorStream(true);
-
-            Process pr = ps.start();
-            BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-            String line;
-            while ((line = in.readLine()) != null) {
-                System.out.println(line);
-            }
-            pr.waitFor();
-            in.close();
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+        // -t замена табуляцию на набор символов
+        if ((options.contains("-t")) && (line.contains("\t"))) {
+            line = line.replaceAll("\t", "tab");
         }
+
+        StringBuilder lineBuffer = new StringBuilder(line);
+
+        // -b нумерация непустых строк
+        if ((options.contains("-b")) && (!line.equals(""))) {
+            i++;
+            lineBuffer.insert(0, "\t"+i+" ");
+        }
+
+        // -e добавление в конец строки символа $
+        if (options.contains("-e")) {
+            lineBuffer.append("$");
+        }
+
+        // -s удаление повторяющихся пустых строк
+        if (options.contains("-s") && (!line.equals("") || !lastLine.equals(""))) {
+            // -n нумерация всех строк
+            if ((options.contains("-n")) && (!options.contains("-b"))) {
+                i++;
+                lineBuffer.insert(0, "\t"+i+" ");
+            }
+            System.out.println(lineBuffer);
+        } else if (!options.contains("-s")) {
+            if ((options.contains("-n")) && (!options.contains("-b"))) {
+                i++;
+                lineBuffer.insert(0, "\t"+i+" ");
+            }
+            System.out.println(lineBuffer);
+        }
+        return i;                                               // вовзращает индекс строки дял нумерации
     }
 
-    public static void lsClone(String argumentsLine) {
+    //Команда Unix ls
+    public static void lsClone(ArrayList<String> options, String argumentsLine, String spacing) {
 
-        if (Objects.equals(argumentsLine, ""))
+        String path;
+        if (Objects.equals(argumentsLine, ""))               // если аргумент пустой, то устанавливается значение по умолчанию
             argumentsLine = ".";
 
-        File folder = new File(argumentsLine);
+        path = argumentsLine;                                   // строка с путем
+        File folder = new File(path);
 
-        File[] listOfFiles = folder.listFiles();
+        File[] listOfFiles = folder.listFiles();                // извлечение файлов из каталога
         if (listOfFiles != null) {
-            Arrays.sort(listOfFiles);
+            // -Х сортировка по алфавиту
+            // -r сортировка в обратном порядке
+            if ((options.contains("-X")) && (!options.contains("-r"))) {
+                Arrays.sort(listOfFiles);
+            } else if ((options.contains("-X")) && (options.contains("-r"))) {
+                Arrays.sort(listOfFiles, Collections.<File>reverseOrder());
+            }
             for (File listOfFile : listOfFiles) {
-                System.out.println(listOfFile.getName());
+                if (listOfFile.isDirectory() && !listOfFile.isHidden()) {
+                    System.out.println(spacing + ANSI_BLUE + listOfFile.getName() + ANSI_RESET);
+                    // -R рекурсивный показ файлов в подкаталогах
+                    if (options.contains("-R")) {
+                        lsClone(options, path + "/" + listOfFile.getName(), spacing + "\t");
+                    }
+                }
+                if (listOfFile.isFile() && !listOfFile.isHidden()) {
+                    System.out.println(spacing + ANSI_GREEN + listOfFile.getName() + ANSI_RESET);
+                }
             }
         } else {
-            System.out.println("Directory is empty");
+            System.out.println(spacing + "Directory is empty");
         }
     }
 }
