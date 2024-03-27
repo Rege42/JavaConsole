@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class EchoCommamd implements Command{
+public class EchoCommand implements Command{
 
     @Override
     public void executeCommand(ArrayList<String> options, ArrayList<String> arguments) {
@@ -17,7 +17,6 @@ public class EchoCommamd implements Command{
         } else {
             System.out.println("echo command summoned incorrectly");
         }
-
     }
 
     static public void echoAppend(String filename, String message) {
@@ -31,6 +30,4 @@ public class EchoCommamd implements Command{
             throw new RuntimeException(e);
         }
     }
-
-
 }

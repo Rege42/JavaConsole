@@ -34,7 +34,7 @@ public class CommandRunner {
         return switch (commandType) {
             case "cat" -> new CatCommand();
             case "ls" -> new LsCommand();
-            case "echo" -> new EchoCommamd();
+            case "echo" -> new EchoCommand();
             default -> null;
         };
     }
