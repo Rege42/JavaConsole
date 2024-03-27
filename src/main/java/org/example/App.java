@@ -204,7 +204,7 @@ public class App
                 }
             }
         } else {
-            System.out.println(spacing + "Directory is empty");
+            System.out.println(argumentsLine);
         }
     }
 }
