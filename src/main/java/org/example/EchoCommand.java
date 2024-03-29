@@ -20,6 +20,7 @@ public class EchoCommand implements Command{
     }
 
     static public void echoAppend(String filename, String message) {
+
         final var file = new File(filename);
         final FileWriter writer;
         try {
