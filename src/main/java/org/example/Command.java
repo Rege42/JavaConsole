@@ -1,8 +1,9 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public interface Command {
 
-    void executeCommand(ArrayList<String> options, ArrayList<String> arguments);
+    void executeCommand(HashSet<String> options, ArrayList<String> arguments);
 }

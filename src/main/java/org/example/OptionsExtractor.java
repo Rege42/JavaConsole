@@ -1,12 +1,12 @@
 package org.example;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 public class OptionsExtractor {
 
-    public static ArrayList<String> findOptions(String[] args) {
+    public static HashSet<String> extractOptions(String[] args) {
 
-        ArrayList<String> options = new ArrayList<>();
+        HashSet<String> options = new HashSet<>();
 
         for (int i = 1; i < args.length; i++) {                     // поиск в введенной строке опций и аргументов
             if (args[i].startsWith("-")) {

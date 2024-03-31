@@ -1,6 +1,7 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Scanner;
 
 public class CommandRunner {
@@ -9,37 +10,34 @@ public class CommandRunner {
 
     void run(String[] args) {
 
-        String newLine = "";
-        while (!newLine.equals("exit")) {
-            final var commandStructure = new CommandStructure(args[0],
-                    OptionsExtractor.findOptions(args),
-                    ArgumentsExtractor.findArguments(args));
+        do {
+            final var chosenCommand = findCommand(args[0]);
 
-
-            final var chosenCommand = findCommand(commandStructure.getType());
-
-            if (chosenCommand == null) {
+            try {
+                runCommand(chosenCommand, OptionsExtractor.extractOptions(args), ArgumentsExtractor.findArguments(args));
+            } catch (NullPointerException e) {
                 System.out.println("Unknown command");
-            } else {
-                runCommand(chosenCommand, commandStructure.getOptions(), commandStructure.getArguments());
             }
 
-            newLine = sc.nextLine();
-            args = newLine.split(" ");
-        }
+            System.out.print(CdCommand.getPath() + "> ");
+            args = sc.nextLine().split(" ");
+        } while (!args[0].equals("exit"));
     }
 
+    //TODO абстрактный интерфейс?
     private Command findCommand (String commandType) {
 
         return switch (commandType) {
             case "cat" -> new CatCommand();
             case "ls" -> new LsCommand();
             case "echo" -> new EchoCommand();
+            case "cd" -> new CdCommand();
             default -> null;
         };
     }
 
-    private void runCommand(Command command, ArrayList<String> options, ArrayList<String> arguments) {
+
+    private void runCommand(Command command, HashSet<String> options, ArrayList<String> arguments) {
 
         command.executeCommand(options, arguments);
     }
