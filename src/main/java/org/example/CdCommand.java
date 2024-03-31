@@ -1,5 +1,6 @@
 package org.example;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -14,7 +15,11 @@ public class CdCommand implements Command{
         if (arguments.isEmpty()) {
             setPath(".");
         } else {
-            CdCommand.path = CdCommand.path.resolve(arguments.get(0));
+            if (Files.isDirectory(CdCommand.path.resolve(arguments.get(0)))) {
+                CdCommand.path = CdCommand.path.resolve(arguments.get(0));
+            } else {
+                System.out.println("Directory is not found");
+            }
         }
     }
 

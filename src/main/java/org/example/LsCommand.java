@@ -80,6 +80,11 @@ public class LsCommand implements Command {
     @Override
     public void executeCommand(HashSet<String> options, ArrayList<String> arguments) {
         final var path = CdCommand.getPath().resolve(arguments.isEmpty() ? "" : arguments.get(0));
-        lsCommand(options, path, "");
+        if (Files.isDirectory(path)) {
+            lsCommand(options, path, "");
+        } else {
+            System.out.println("Not a directory");
+        }
+
     }
 }

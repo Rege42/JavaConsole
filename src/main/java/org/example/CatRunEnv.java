@@ -3,6 +3,7 @@ package org.example;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -45,16 +46,22 @@ public class CatRunEnv{
 
     public void catFull() {
 
-        final var path = CdCommand.getPath().resolve(arguments.get(0)).toFile();
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(path));
-            while ((this.line = bufferedReader.readLine()) != null) {        // цикл чтения данных из файла
-                this.catOptions();
-                this.lastLine = this.line;
-                this.catOutput();
+        final var path = CdCommand.getPath().resolve(arguments.get(0));
+
+        if (!Files.isRegularFile(path)) {
+           System.out.println("File is not readable");
+        } else {
+            final var file = path.toFile();
+            try {
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+                while ((this.line = bufferedReader.readLine()) != null) {        // цикл чтения данных из файла
+                    this.catOptions();
+                    this.lastLine = this.line;
+                    this.catOutput();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
