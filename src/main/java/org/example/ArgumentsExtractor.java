@@ -10,18 +10,19 @@ public class ArgumentsExtractor {
 
         ArrayList<String> arguments = new ArrayList<>();
 
-        for (pos = 1; pos < args.length; pos++) {                     // поиск в введенной строке опций и аргументов
+        for (pos = 1; pos < args.length; pos++) {
+
+            if (!args[pos].startsWith("-")) {
+                arguments.add(args[pos]);
+                continue;
+            }
             if (args[pos].startsWith("\"")) {
                 arguments.add(createComplexArg(args));
                 if (pos >= args.length) {
                     break;
                 }
             }
-            if (!args[pos].startsWith("-")) {
-                arguments.add(args[pos]);
-            }
         }
-
         return arguments;
     }
 
@@ -34,10 +35,7 @@ public class ArgumentsExtractor {
         }
         complexArg.append(args[pos]);
         pos++;
-        String bufferStr = complexArg.toString();
-        bufferStr = bufferStr.replaceAll("\"","");
-
-        return bufferStr;
+        return complexArg.toString().replaceAll("\"","");
     }
 }
 

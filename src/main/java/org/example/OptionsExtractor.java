@@ -1,19 +1,16 @@
 package org.example;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 public class OptionsExtractor {
 
     public static HashSet<String> extractOptions(String[] args) {
 
-        HashSet<String> options = new HashSet<>();
-
-        for (int i = 1; i < args.length; i++) {                     // поиск в введенной строке опций и аргументов
-            if (args[i].startsWith("-")) {
-                options.add(args[i]);
-            }
-        }
-
-        return options;
+        return (HashSet<String>) Arrays.stream(args)
+                .skip(1)
+                .filter(arg -> arg.startsWith("-"))
+                .collect(Collectors.toSet());
     }
 }

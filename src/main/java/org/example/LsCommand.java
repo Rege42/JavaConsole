@@ -1,19 +1,24 @@
 package org.example;
 
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-//TODO создать среду выполнения
+//TODO использовать терминальные узлы
 public class LsCommand implements Command {
+
+    private HashSet<String> options;
 
     // цветовые настройки текста консоли
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_BLUE = "\u001B[34m";
+
+    static final Consumer<Object> println = System.out::println;
 
     private static final Comparator<Path> comparatorAO = Comparator.comparing(Path::getFileName);
 
@@ -26,65 +31,81 @@ public class LsCommand implements Command {
     };
 
     //Команда Unix ls
-    public static void lsCommand(HashSet<String> options, Path path, String spacing) {
+    public void lsCommand(Path path, String spacing) {
 
-        List<Path> files = new ArrayList<>();
-        try(DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path)) {
-            for(Path file : directoryStream) {
-                files.add(file);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        List<Path> files = fileExtractor(path);
 
-        lsSort(options, files);
+        lsSort(files);
 
-        directoryOutput(options, files, path, spacing);
+        directoryOutput(files, path, spacing);
 
     }
 
-    private static void lsSort(HashSet<String> options, List<Path> files) {
+    private List<Path> fileExtractor (Path path) {
+
+        try(Stream<Path> paths = Files.list(path)) {
+            return paths.collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void lsSort(List<Path> files) {
 
         // -X сортировка по алфавиту
         // -r обратный порядок
-        if (options.contains("-X") && !options.contains("-r")) {
+        if (this.options.contains("-X") && !this.options.contains("-r")) {
             files.sort(comparatorAO);
-        } else if (options.contains("-X") && options.contains("-r")) {
+            return;
+        } else if (this.options.contains("-X") && this.options.contains("-r")) {
             files.sort(Collections.reverseOrder(comparatorAO));
+            return;
         }
 
         // -с сортировка по времени модификации
         // -r обратный порядок
-        if (options.contains("-c") && !options.contains("-r")) {
+        if (this.options.contains("-c") && !this.options.contains("-r")) {
             files.sort(comparatorLM);
-        } else if (options.contains("-X") && options.contains("-r")) {
+        } else if (this.options.contains("-X") && this.options.contains("-r")) {
             files.sort(Collections.reverseOrder(comparatorLM));
         }
     }
 
-    public static void directoryOutput(HashSet<String> options, List<Path> files, Path path, String spacing) {
+    private void directoryOutput(List<Path> files, Path path, String spacing) {
 
         for (Path file : files) {
+
+            if (Files.isRegularFile(file)) {
+                printFile(spacing, ANSI_GREEN, file.getFileName());
+                continue;
+            }
+
             if (Files.isDirectory(file)) {
-                System.out.println(spacing + ANSI_BLUE + file.getFileName() + ANSI_RESET);
+                printFile(spacing, ANSI_BLUE, file.getFileName());
+
                 // -R рекурсивный показ файлов в подкаталогах
-                if (options.contains("-R")) {
-                    lsCommand(options, path.resolve(file.getFileName()), spacing + "\t");
+                if (this.options.contains("-R")) {
+                    lsCommand(path.resolve(file.getFileName()), spacing + "\t");
                 }
-            } else {
-                System.out.println(spacing + ANSI_GREEN + file.getFileName() + ANSI_RESET);
             }
         }
     }
 
+    private void printFile (String spacing, String color, Path filename) {
+        println.accept(spacing + color + filename + ANSI_RESET);
+    }
+
     @Override
     public void executeCommand(HashSet<String> options, ArrayList<String> arguments) {
-        final var path = CdCommand.getPath().resolve(arguments.isEmpty() ? "" : arguments.get(0));
+
+        this.options = options;
+        final var path = State.getInstance().getPath().resolve(arguments.isEmpty() ? "" : arguments.get(0));
+
         if (Files.isDirectory(path)) {
-            lsCommand(options, path, "");
+            lsCommand(path, "");
         } else {
             System.out.println("Not a directory");
         }
-
     }
+
 }

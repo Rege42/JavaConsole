@@ -4,25 +4,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.function.Consumer;
 
-//TODO создать среду выполнения
 public class EchoCommand implements Command{
 
-    @Override
-    public void executeCommand(HashSet<String> options, ArrayList<String> arguments) {
+    static final Consumer<Object> println = System.out::println;
 
-        if (arguments.size() == 1) {
-            System.out.println(arguments.get(0));
-        } else if (arguments.size() == 2) {
-            echoAppend(arguments.get(0), arguments.get(1));
-        } else {
-            System.out.println("echo command summoned incorrectly");
-        }
-    }
+    public void echoAppend(String filename, String message) {
 
-    static public void echoAppend(String filename, String message) {
-
-        final var file = CdCommand.getPath().resolve(filename).toFile();
+        final var file = State.getInstance().getPath().resolve(filename).toFile();
         final FileWriter writer;
         try {
             writer = new FileWriter(file, true);
@@ -31,5 +21,20 @@ public class EchoCommand implements Command{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void executeCommand(HashSet<String> options, ArrayList<String> arguments) {
+
+        if (arguments.size() == 1) {
+            println.accept(arguments.get(0));
+            return;
+        } else if (arguments.size() == 2) {
+            echoAppend(arguments.get(0), arguments.get(1));
+            return;
+        }
+
+        println.accept("echo command summoned incorrectly");
+
     }
 }
