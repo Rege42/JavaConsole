@@ -1,12 +1,7 @@
 package org.example;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Objects;
-import java.util.Scanner;
 
 //TODO убрать класс после изменения интерфейса
 public class CatCommand implements Command {
