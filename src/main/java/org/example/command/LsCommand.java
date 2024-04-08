@@ -34,13 +34,13 @@ public class LsCommand implements Command {
     };
 
     //Команда Unix ls
-    public void lsBuildCommand(Path path, Node<String> root) {
+    public void lsBuildCommand(Path path, Node root) {
 
         List<Path> files = fileExtractor(path);
 
         lsSort(files);
 
-        directoryOutputTree(files, path, root);
+        constructTree(files, path, root);
 
     }
 
@@ -74,7 +74,7 @@ public class LsCommand implements Command {
         }
     }
 
-    private void directoryOutputTree(List<Path> files, Path path, Node<String> root) {
+    private void constructTree(List<Path> files, Path path, Node root) {
 
         for (Path file : files) {
 
@@ -94,14 +94,15 @@ public class LsCommand implements Command {
         }
     }
 
-    private Node<String> constructNode(String color, Path file, Node<String> root) {
+    private Node constructNode(String color, Path file, Node root) {
+
         final var filename = color + file.getFileName() + ANSI_RESET;
-        final var node = new Node<>(filename);
+        final var node = new Node(filename);
         root.addChild(node);
         return node;
     }
 
-    private static <T> void printTree(Node<T> node, String appender) {
+    private static void printTree(Node node, String appender) {
 
         if (node.getData().equals("root")) {
             println.accept(node.getData());
@@ -111,7 +112,7 @@ public class LsCommand implements Command {
         node.getChildren().forEach(each ->  printTree(each, appender + appender));
     }
 
-    private static <T> void printTreePlus(Node<T> node, String appender) {
+    private static void printTreePlus(Node node, String appender) {
 
         if (node.getData().equals("root")) {
             println.accept(node.getData());
@@ -133,7 +134,7 @@ public class LsCommand implements Command {
 
         this.options = options;
         final var path = State.getInstance().getPath().resolve(arguments.isEmpty() ? "" : arguments.get(0));
-        Node<String> root = new Node<>("root");
+        Node root = new Node("root");
 
         if (!Files.isDirectory(path)) {
             System.out.println("Not a directory");
@@ -149,11 +150,5 @@ public class LsCommand implements Command {
         }
 
     }
-
-
-
-
-
-
 
 }

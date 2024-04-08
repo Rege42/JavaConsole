@@ -3,46 +3,45 @@ package org.example.utility;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Node<T> {
+public class Node {
 
-    private T data;
+    private String data;
 
-    private final List<Node<T>> children = new ArrayList<>();
+    private final List<Node> children = new ArrayList<>();
 
-    private Node<T> parent = null;
+    private Node parent = null;
 
-    public Node(T data) {
+    public Node(String data) {
         this.data = data;
     }
 
-    public Node<T> addChild(Node<T> child) {
+    public void addChild(Node child) {
         child.setParent(this);
         this.children.add(child);
-        return child;
     }
 
-    public void addChildren(List<Node<T>> children) {
+    public void addChildren(List<Node> children) {
         children.forEach(each -> each.setParent(this));
         this.children.addAll(children);
     }
 
-    public List<Node<T>> getChildren() {
+    public List<Node> getChildren() {
         return children;
     }
 
-    public T getData() {
+    public String getData() {
         return data;
     }
 
-    public void setData(T data) {
+    public void setData(String data) {
         this.data = data;
     }
 
-    private void setParent(Node<T> parent) {
+    private void setParent(Node parent) {
         this.parent = parent;
     }
 
-    public Node<T> getParent() {
+    public Node getParent() {
         return parent;
     }
 
