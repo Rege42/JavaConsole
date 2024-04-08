@@ -1,11 +1,13 @@
-package org.example;
+package org.example.command;
+
+import org.example.utility.State;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class CdCommand implements Command{
+public class CdCommand implements Command {
 
     @Override
     public void executeCommand(HashSet<String> options, ArrayList<String> arguments) {

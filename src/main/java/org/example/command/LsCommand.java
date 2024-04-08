@@ -1,4 +1,7 @@
-package org.example;
+package org.example.command;
+
+import org.example.utility.Node;
+import org.example.utility.State;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,7 +11,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-//TODO использовать терминальные узлы
+
 public class LsCommand implements Command {
 
     private HashSet<String> options;
@@ -31,13 +34,13 @@ public class LsCommand implements Command {
     };
 
     //Команда Unix ls
-    public void lsCommand(Path path, String spacing) {
+    public void lsCommand(Path path, Node<String> root) {
 
         List<Path> files = fileExtractor(path);
 
         lsSort(files);
 
-        directoryOutput(files, path, spacing);
+        directoryOutputTree(files, path, root);
 
     }
 
@@ -71,28 +74,36 @@ public class LsCommand implements Command {
         }
     }
 
-    private void directoryOutput(List<Path> files, Path path, String spacing) {
+    private void directoryOutputTree(List<Path> files, Path path, Node<String> root) {
 
         for (Path file : files) {
 
             if (Files.isRegularFile(file)) {
-                printFile(spacing, ANSI_GREEN, file.getFileName());
+                constructNode(ANSI_GREEN, file, root);
                 continue;
             }
 
             if (Files.isDirectory(file)) {
-                printFile(spacing, ANSI_BLUE, file.getFileName());
+                final var node = constructNode(ANSI_BLUE, file, root);
 
                 // -R рекурсивный показ файлов в подкаталогах
                 if (this.options.contains("-R")) {
-                    lsCommand(path.resolve(file.getFileName()), spacing + "\t");
+                    lsCommand(path.resolve(file.getFileName()), node);
                 }
             }
         }
     }
 
-    private void printFile (String spacing, String color, Path filename) {
-        println.accept(spacing + color + filename + ANSI_RESET);
+    private Node<String> constructNode (String color, Path file, Node<String> root) {
+        final var filename = color + file.getFileName() + ANSI_RESET;
+        final var node = new Node<>(filename);
+        root.addChild(node);
+        return node;
+    }
+
+    private static <T> void printTree(Node<T> node, String appender) {
+        println.accept(appender + node.getData());
+        node.getChildren().forEach(each ->  printTree(each, appender + appender));
     }
 
     @Override
@@ -100,12 +111,21 @@ public class LsCommand implements Command {
 
         this.options = options;
         final var path = State.getInstance().getPath().resolve(arguments.isEmpty() ? "" : arguments.get(0));
+        Node<String> root = new Node<>("root");
 
         if (Files.isDirectory(path)) {
-            lsCommand(path, "");
+            lsCommand(path, root);
+            printTree(root, " ");
         } else {
             System.out.println("Not a directory");
         }
+
     }
+
+
+
+
+
+
 
 }

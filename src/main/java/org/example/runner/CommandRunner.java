@@ -1,4 +1,9 @@
-package org.example;
+package org.example.runner;
+
+import org.example.extractor.ArgumentsExtractor;
+import org.example.extractor.OptionsExtractor;
+import org.example.utility.State;
+import org.example.command.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -10,7 +15,7 @@ public class CommandRunner {
     static final Scanner scanner = new Scanner(System.in);
     static final Consumer<Object> print = System.out::print;
 
-    void run(String[] args) {
+    public void run(String[] args) {
 
         do {
             executeCommandWithArgs(args);
@@ -20,7 +25,7 @@ public class CommandRunner {
         } while (!args[0].equals("exit"));
     }
 
-    //TODO CommandProvider
+    // CommandProvider
     private static Command findCommand (String commandType) {
 
         return switch (commandType) {
@@ -37,7 +42,7 @@ public class CommandRunner {
         try {
             command.executeCommand(options, arguments);
         } catch (NullPointerException e) {
-            print.accept("Unknown command+\n");
+            print.accept("Unknown command\n");
         }
     }
 

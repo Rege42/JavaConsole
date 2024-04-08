@@ -1,11 +1,13 @@
-package org.example;
+package org.example.command;
+
+import org.example.utility.State;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class CatCommand implements Command{
+public class CatCommand implements Command {
 
     private StringBuilder prefix = new StringBuilder();
     private String line;

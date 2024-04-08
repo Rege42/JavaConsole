@@ -1,4 +1,6 @@
-package org.example;
+package org.example.command;
+
+import org.example.utility.State;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -6,7 +8,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.function.Consumer;
 
-public class EchoCommand implements Command{
+public class EchoCommand implements Command {
 
     static final Consumer<Object> println = System.out::println;
 

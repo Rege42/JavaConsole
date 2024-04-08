@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.runner.CommandRunner;
+
 public class App {
 
     public static void main(String[] args) {
