@@ -44,7 +44,7 @@ public class LsCommand implements Command {
 
     }
 
-    private List<Path> fileExtractor (Path path) {
+    private List<Path> fileExtractor(Path path) {
 
         try(Stream<Path> paths = Files.list(path)) {
             return paths.collect(Collectors.toList());
@@ -94,7 +94,7 @@ public class LsCommand implements Command {
         }
     }
 
-    private Node<String> constructNode (String color, Path file, Node<String> root) {
+    private Node<String> constructNode(String color, Path file, Node<String> root) {
         final var filename = color + file.getFileName() + ANSI_RESET;
         final var node = new Node<>(filename);
         root.addChild(node);
@@ -102,8 +102,30 @@ public class LsCommand implements Command {
     }
 
     private static <T> void printTree(Node<T> node, String appender) {
-        println.accept(appender + node.getData());
+
+        if (node.getData().equals("root")) {
+            println.accept(node.getData());
+        } else {
+            println.accept(appender + node.getData());
+        }
         node.getChildren().forEach(each ->  printTree(each, appender + appender));
+    }
+
+    private static <T> void printTreePlus(Node<T> node, String appender) {
+
+        if (node.getData().equals("root")) {
+            println.accept(node.getData());
+        } else {
+            println.accept(appender+"|");
+            println.accept(appender+"+--"+node.getData());
+        }
+
+        if ((!node.getChildren().isEmpty())&&(!node.getData().equals("root"))) {
+            appender += "|  ";
+        }
+
+        String finalAppender = appender;
+        node.getChildren().forEach(each ->  printTreePlus(each, finalAppender));
     }
 
     @Override
@@ -115,7 +137,14 @@ public class LsCommand implements Command {
 
         if (Files.isDirectory(path)) {
             lsCommand(path, root);
-            printTree(root, " ");
+
+            // -+ вывод дерева файлов используя визуальное оформление
+            if(this.options.contains("-+")) {
+                printTreePlus(root, "");
+            } else {
+                printTree(root, " ");
+            }
+
         } else {
             System.out.println("Not a directory");
         }
