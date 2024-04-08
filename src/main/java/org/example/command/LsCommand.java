@@ -34,7 +34,7 @@ public class LsCommand implements Command {
     };
 
     //Команда Unix ls
-    public void lsCommand(Path path, Node<String> root) {
+    public void lsBuildCommand(Path path, Node<String> root) {
 
         List<Path> files = fileExtractor(path);
 
@@ -88,7 +88,7 @@ public class LsCommand implements Command {
 
                 // -R рекурсивный показ файлов в подкаталогах
                 if (this.options.contains("-R")) {
-                    lsCommand(path.resolve(file.getFileName()), node);
+                    lsBuildCommand(path.resolve(file.getFileName()), node);
                 }
             }
         }
@@ -135,18 +135,17 @@ public class LsCommand implements Command {
         final var path = State.getInstance().getPath().resolve(arguments.isEmpty() ? "" : arguments.get(0));
         Node<String> root = new Node<>("root");
 
-        if (Files.isDirectory(path)) {
-            lsCommand(path, root);
+        if (!Files.isDirectory(path)) {
+            System.out.println("Not a directory");
+        } else {
+            lsBuildCommand(path, root);
 
             // -+ вывод дерева файлов используя визуальное оформление
-            if(this.options.contains("-+")) {
+            if (this.options.contains("-+")) {
                 printTreePlus(root, "");
             } else {
                 printTree(root, " ");
             }
-
-        } else {
-            System.out.println("Not a directory");
         }
 
     }

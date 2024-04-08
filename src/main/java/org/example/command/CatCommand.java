@@ -19,9 +19,10 @@ public class CatCommand implements Command {
     private boolean writeLine = true;
     private String lastLine = "initLine";
 
-    private void catCommand () {
+    private void catBuildCommand() {
 
-        if (arguments.isEmpty()) {             // если файл не предоставлен, то данные читаются с потока ввода
+        // если файл не предоставлен, то данные читаются с потока ввода
+        if (arguments.isEmpty()) {
             this.catBuffered(new InputStreamReader(System.in));
             return;
         }
@@ -42,7 +43,7 @@ public class CatCommand implements Command {
         }
     }
 
-    public void catBuffered (Reader reader) {
+    public void catBuffered(Reader reader) {
         try {
             final var bufferedReader = new BufferedReader(reader);
             while ((this.line = bufferedReader.readLine()) != null) {        // цикл чтения данных из файла
@@ -110,6 +111,6 @@ public class CatCommand implements Command {
 
         this.arguments = arguments;
         this.options = options;
-        catCommand();
+        catBuildCommand();
     }
 }
