@@ -1,13 +1,12 @@
-package org.example.command;
+package console.command.ls;
 
-import org.example.utility.Node;
-import org.example.utility.State;
+import console.command.Command;
+import console.utility.PathResolver;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,18 +19,6 @@ public class LsCommand implements Command {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_BLUE = "\u001B[34m";
-
-    static final Consumer<Object> println = System.out::println;
-
-    private static final Comparator<Path> comparatorAO = Comparator.comparing(Path::getFileName);
-
-    private static final Comparator<Path> comparatorLM = (o1, o2) -> {
-        try {
-            return Files.getLastModifiedTime(o1).compareTo(Files.getLastModifiedTime(o2));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    };
 
     //Команда Unix ls
     public void lsBuildCommand(Path path, Node root) {
@@ -58,19 +45,31 @@ public class LsCommand implements Command {
         // -X сортировка по алфавиту
         // -r обратный порядок
         if (this.options.contains("-X") && !this.options.contains("-r")) {
-            files.sort(comparatorAO);
+            files.sort(Comparator.comparing(Path::getFileName));
             return;
         } else if (this.options.contains("-X") && this.options.contains("-r")) {
-            files.sort(Collections.reverseOrder(comparatorAO));
+            files.sort(Collections.reverseOrder(Comparator.comparing(Path::getFileName)));
             return;
         }
 
         // -с сортировка по времени модификации
         // -r обратный порядок
         if (this.options.contains("-c") && !this.options.contains("-r")) {
-            files.sort(comparatorLM);
+            files.sort((o1, o2) -> {
+                try {
+                    return Files.getLastModifiedTime(o1).compareTo(Files.getLastModifiedTime(o2));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
         } else if (this.options.contains("-X") && this.options.contains("-r")) {
-            files.sort(Collections.reverseOrder(comparatorLM));
+            files.sort(Collections.reverseOrder((o1, o2) -> {
+                try {
+                    return Files.getLastModifiedTime(o1).compareTo(Files.getLastModifiedTime(o2));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }));
         }
     }
 
@@ -102,50 +101,23 @@ public class LsCommand implements Command {
         return node;
     }
 
-    private static void printTree(Node node, String appender) {
-
-        if (node.getData().equals("root")) {
-            println.accept(node.getData());
-        } else {
-            println.accept(appender + node.getData());
-        }
-        node.getChildren().forEach(each ->  printTree(each, appender + appender));
-    }
-
-    private static void printTreePlus(Node node, String appender) {
-
-        if (node.getData().equals("root")) {
-            println.accept(node.getData());
-        } else {
-            println.accept(appender+"|");
-            println.accept(appender+"+--"+node.getData());
-        }
-
-        if ((!node.getChildren().isEmpty())&&(!node.getData().equals("root"))) {
-            appender += "|  ";
-        }
-
-        String finalAppender = appender;
-        node.getChildren().forEach(each ->  printTreePlus(each, finalAppender));
-    }
-
     @Override
     public void executeCommand(HashSet<String> options, ArrayList<String> arguments) {
 
         this.options = options;
-        final var path = State.getInstance().getPath().resolve(arguments.isEmpty() ? "" : arguments.get(0));
-        Node root = new Node("root");
+        final var path = new PathResolver().resolvePath(arguments.isEmpty() ? "" : arguments.get(0));
+        final var root = new Node("root");
 
         if (!Files.isDirectory(path)) {
             System.out.println("Not a directory");
         } else {
             lsBuildCommand(path, root);
 
-            // -+ вывод дерева файлов используя визуальное оформление
-            if (this.options.contains("-+")) {
-                printTreePlus(root, "");
+            // -p вывод дерева файлов используя визуальное оформление
+            if (this.options.contains("-p")) {
+                root.printTree("-p");
             } else {
-                printTree(root, " ");
+                root.printTree("");
             }
         }
 

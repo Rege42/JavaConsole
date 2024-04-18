@@ -35,6 +35,13 @@
       <artifactId>checkstyle</artifactId>
       <version>10.14.2</version>
     </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.32</version>
+      <scope>provided</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -45,11 +52,6 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
           <version>${checkstyle-plugin.version}</version>
-          <dependencies>
-
-
-
-          </dependencies>
           <configuration>
             <configLocation>${checkstyle.config.url}</configLocation>
           </configuration>
@@ -103,7 +105,7 @@
           <configuration>
             <archive>
               <manifest>
-                <mainClass>org.example.App</mainClass>
+                <mainClass>console.App</mainClass>
               </manifest>
             </archive>
           </configuration>

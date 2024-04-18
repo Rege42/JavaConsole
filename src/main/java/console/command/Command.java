@@ -1,4 +1,4 @@
-package org.example.command;
+package console.command;
 
 import java.util.ArrayList;
 import java.util.HashSet;

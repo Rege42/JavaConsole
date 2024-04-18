@@ -1,6 +1,7 @@
-package org.example.command;
+package console.command.cd;
 
-import org.example.utility.State;
+import console.command.Command;
+import console.utility.PathResolver;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -12,13 +13,15 @@ public class CdCommand implements Command {
     @Override
     public void executeCommand(HashSet<String> options, ArrayList<String> arguments) {
 
+        final var pathResolver = new PathResolver();
+
         if (arguments.isEmpty()) {
-            State.getInstance().setPath(Paths.get("."));
+            pathResolver.setPath(Paths.get("."));
             return;
         }
-        final var currentPath = State.getInstance().getPath().resolve(arguments.get(0));
+        final var currentPath = pathResolver.resolvePath(arguments.get(0));
         if (Files.isDirectory(currentPath)) {
-            State.getInstance().setPath(currentPath);
+            pathResolver.setPath(currentPath);
         } else {
             System.out.println("Directory is not found");
         }
