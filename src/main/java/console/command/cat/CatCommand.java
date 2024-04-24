@@ -1,56 +1,25 @@
 package console.command.cat;
 
 import console.command.Command;
-import console.utility.PathResolver;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class CatCommand implements Command {
 
-    private void catBuffered(HashSet<String> options, Reader reader) {
-        try {
-            final var bufferedReader = new BufferedReader(reader);
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {        // цикл чтения данных из файла
-                CatRuntime.getInstance().prepareNewLine(options, line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    private static CatCommand INSTANCE;
+
+    public static CatCommand getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new CatCommand();
         }
-    }
-
-    private Reader getReader(ArrayList<String> arguments) {
-
-        if (arguments.isEmpty()) {
-            return new InputStreamReader(System.in);
-        }
-
-        final var path = new PathResolver().resolvePath(arguments.get(0));
-        if (Files.isRegularFile(path)) {
-            try {
-                return new FileReader(path.toFile());
-            } catch (FileNotFoundException e) {
-                System.out.println("File is not readable");
-            }
-        }
-
-        return null;
+        return INSTANCE;
     }
 
     @Override
-    public void executeCommand(HashSet<String> options, ArrayList<String> arguments) {
+    public void executeCommand(Set<String> options, List<String> arguments) {
 
-        Reader reader = null;
-        try {
-            reader = getReader(arguments);
-        } catch (NullPointerException e) {
-            System.out.println("Cannot execute cat command");
-        }
-
-        catBuffered(options, reader);
+        new CatRuntime(options, arguments).execute();
 
     }
 }

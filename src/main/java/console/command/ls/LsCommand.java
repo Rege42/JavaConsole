@@ -42,34 +42,41 @@ public class LsCommand implements Command {
 
     private void lsSort(List<Path> files) {
 
-        // -X сортировка по алфавиту
-        // -r обратный порядок
-        if (this.options.contains("-X") && !this.options.contains("-r")) {
-            files.sort(Comparator.comparing(Path::getFileName));
-            return;
-        } else if (this.options.contains("-X") && this.options.contains("-r")) {
-            files.sort(Collections.reverseOrder(Comparator.comparing(Path::getFileName)));
-            return;
-        }
+        boolean reverseOrder = this.options.contains("-r");
 
-        // -с сортировка по времени модификации
-        // -r обратный порядок
-        if (this.options.contains("-c") && !this.options.contains("-r")) {
-            files.sort((o1, o2) -> {
-                try {
-                    return Files.getLastModifiedTime(o1).compareTo(Files.getLastModifiedTime(o2));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        } else if (this.options.contains("-X") && this.options.contains("-r")) {
-            files.sort(Collections.reverseOrder((o1, o2) -> {
-                try {
-                    return Files.getLastModifiedTime(o1).compareTo(Files.getLastModifiedTime(o2));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }));
+        alphabetSort(files, reverseOrder);
+
+        dateOfCreationSort(files, reverseOrder);
+
+    }
+
+    // -X сортировка по алфавиту
+    private void alphabetSort(List<Path> files, boolean reverseOrder) {
+
+        final Comparator<Path> comparator = Comparator.comparing(Path::getFileName);
+
+        if (this.options.contains("-X") && reverseOrder) {
+            files.sort(Collections.reverseOrder(comparator));   // -r обратный порядок
+        } else if (this.options.contains("-X")) {
+            files.sort(comparator);
+        }
+    }
+
+    // -с сортировка по времени модификации
+    private void dateOfCreationSort(List<Path> files, boolean reverseOrder) {
+
+        final Comparator<Path> comparator = (o1, o2) -> {
+            try {
+                return Files.getLastModifiedTime(o1).compareTo(Files.getLastModifiedTime(o2));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        };
+
+        if (this.options.contains("-c") && reverseOrder) {
+            files.sort(Collections.reverseOrder(comparator));   // -r обратный порядок
+        } else if (this.options.contains("-c")) {
+            files.sort(comparator);
         }
     }
 
@@ -102,9 +109,9 @@ public class LsCommand implements Command {
     }
 
     @Override
-    public void executeCommand(HashSet<String> options, ArrayList<String> arguments) {
+    public void executeCommand(Set<String> options, List<String> arguments) {
 
-        this.options = options;
+        this.options = (HashSet<String>) options;
         final var path = new PathResolver().resolvePath(arguments.isEmpty() ? "" : arguments.get(0));
         final var root = new Node("root");
 
@@ -115,9 +122,9 @@ public class LsCommand implements Command {
 
             // -p вывод дерева файлов используя визуальное оформление
             if (this.options.contains("-p")) {
-                root.printTree("-p");
+                OutputTree.printTree(root, "-p");
             } else {
-                root.printTree("");
+                OutputTree.printTree(root, "");
             }
         }
 

@@ -1,9 +1,9 @@
 package console.command;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public interface Command {
 
-    void executeCommand(HashSet<String> options, ArrayList<String> arguments);
+    void executeCommand(Set<String> options, List<String> arguments);
 }

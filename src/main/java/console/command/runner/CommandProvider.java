@@ -9,9 +9,9 @@ import console.command.prev.PrevCommand;
 
 public class CommandProvider {
 
-    public static Command provideCommand (String commandType) {
+    public static Command provideCommand(String[] args) {
 
-        return switch (commandType) {
+        return switch (args[0]) {
             case "cat" -> new CatCommand();
             case "ls" -> new LsCommand();
             case "echo" -> new EchoCommand();

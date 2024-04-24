@@ -5,13 +5,13 @@ import console.utility.PathResolver;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class CdCommand implements Command {
 
     @Override
-    public void executeCommand(HashSet<String> options, ArrayList<String> arguments) {
+    public void executeCommand(Set<String> options, List<String> arguments) {
 
         final var pathResolver = new PathResolver();
 

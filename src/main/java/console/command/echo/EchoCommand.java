@@ -4,8 +4,8 @@ import console.command.Command;
 import console.utility.PathResolver;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class EchoCommand implements Command {
 
@@ -14,17 +14,18 @@ public class EchoCommand implements Command {
         final var bufferedWriter = new BufferedWriter(writer);
         try {
             bufferedWriter.write(message+"\n");
-            bufferedWriter.close();
+            if (writer instanceof FileWriter) {
+                bufferedWriter.close();
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void executeCommand(HashSet<String> options, ArrayList<String> arguments) {
+    public void executeCommand(Set<String> options, List<String> arguments) {
 
         if (arguments.size() == 1) {
-
             echoBuffered(new OutputStreamWriter(System.out), arguments.get(0));
             return;
         } else if (arguments.size() == 2) {
