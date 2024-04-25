@@ -3,12 +3,13 @@ package console.command.extractor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 public class ArgumentsExtractor {
 
-    public static ArrayList<String> extractArguments(String[] args) {
+    public static List<String> extractArguments(String[] args) {
 
-        ArrayList<String> arguments = new ArrayList<>();
+        List<String> arguments = new ArrayList<>();
 
         final var iterator = Arrays.stream(args).skip(1).iterator();
         while (iterator.hasNext()) {

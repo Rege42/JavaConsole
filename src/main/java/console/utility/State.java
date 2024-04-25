@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 public  class State {
 
     private static State INSTANCE;
@@ -15,7 +16,7 @@ public  class State {
 
     @Getter
     @Setter
-    private CommandArgs commandArgs;
+    private CommandCall commandCall;
 
     private State() {
         this.path = Paths.get(".");

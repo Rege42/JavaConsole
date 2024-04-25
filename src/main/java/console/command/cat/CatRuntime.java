@@ -13,7 +13,7 @@ public class CatRuntime {
     private final List<String> arguments;
     private int lineCount = 0;
     private boolean writeLine = true;
-    private boolean numerateOnlyNotNull = false;
+    private boolean numerateOnlyNotEmpty = false;
     private String lastLine = "initLine";
 
     public CatRuntime(Set<String> options, List<String> arguments) {
@@ -78,7 +78,7 @@ public class CatRuntime {
 
         StringBuilder prefix = new StringBuilder();
 
-        numerateNotNull(prefix, line);
+        numerateNotEmpty(prefix, line);
 
         numerateAll(prefix, line);
 
@@ -106,44 +106,47 @@ public class CatRuntime {
     // -t замена табуляции на набор символов
     private String replaceTabs(String line) {
 
-        if (this.options.contains("-t")) {
-            return line.replaceAll("\t", "tab");
+        if (!this.options.contains("-t")) {
+            return line;
         }
-        return line;
+
+        return line.replaceAll("\t", "tab");
+
     }
 
     // -b нумерация непустых строк
-    private void numerateNotNull(StringBuilder prefix, String line) {
+    private void numerateNotEmpty(StringBuilder prefix, String line) {
 
-        if (this.options.contains("-b")) {
-            this.numerateOnlyNotNull = true;
-            if (line.equals("")) {
-                return;
-            }
-            this.lineCount++;
-            prefix.append("\t").append(lineCount).append(" ");
+        if (!this.options.contains("-b") || line.equals("")) {
+           return;
         }
+
+        this.numerateOnlyNotEmpty = true;
+
+        this.lineCount++;
+        prefix.append("\t").append(lineCount).append(" ");
 
     }
 
     // -n нумерация всех строк
     private void numerateAll(StringBuilder prefix, String line) {
 
-        if (this.options.contains("-n")) {
-            if (this.numerateOnlyNotNull && line.equals("")) {
-                return;
-            }
-            this.lineCount++;
-            prefix.append("\t").append(lineCount).append(" ");
+        if (!this.options.contains("-n") || (this.numerateOnlyNotEmpty && line.equals(""))) {
+            return;
         }
+
+        this.lineCount++;
+        prefix.append("\t").append(lineCount).append(" ");
     }
 
     // -e добавление в конец строки символа $
     private void addEndLineSymbol(StringBuilder postfix) {
 
         if (this.options.contains("-e")) {
-            postfix.append("$");
+            return;
         }
+
+        postfix.append("$");
     }
 
     // -s удаление повторяющихся пустых строк

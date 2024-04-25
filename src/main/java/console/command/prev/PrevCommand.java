@@ -11,7 +11,7 @@ public class PrevCommand implements Command {
     @Override
     public void executeCommand(Set<String> options, List<String> arguments) {
 
-        final var commandArgs = State.getInstance().getCommandArgs();
+        final var commandArgs = State.getInstance().getCommandCall();
 
         if (commandArgs.getCommand() instanceof PrevCommand) {
             System.out.println("Cannot cast prev command on prev");
