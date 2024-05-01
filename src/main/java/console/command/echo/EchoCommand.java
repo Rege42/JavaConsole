@@ -2,12 +2,24 @@ package console.command.echo;
 
 import console.command.Command;
 import console.utility.PathResolver;
+import lombok.Getter;
 
 import java.io.*;
 import java.util.List;
 import java.util.Set;
 
 public class EchoCommand implements Command {
+
+    @Getter
+    private final String name = "echo";
+
+    @Getter
+    private final String description = "Возвращает введенную строку. Если кроме строки указан файл, строка будет записана в его конец.\n" +
+            "Структура:\n" +
+            "echo <имя файла> <строка>\n" +
+            "Доступные варианты аргументов:\n" +
+            "-строка\n" +
+            "-текстовый файл и строка";
 
     public void echoBuffered(Writer writer, String message) {
 

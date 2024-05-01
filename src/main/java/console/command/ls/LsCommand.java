@@ -4,6 +4,7 @@ import console.command.Command;
 import console.command.ls.printer.BasicTreePrinter;
 import console.command.ls.printer.LineTreePrinter;
 import console.utility.PathResolver;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -12,6 +13,22 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class LsCommand implements Command {
+
+    @Getter
+    private final String name = "ls";
+
+    @Getter
+    private final String description = "Возвращает список файлов и подкаталогов в указанной директории.\n" +
+            "Структура:\n" +
+            "ls <опции> <имя директории>\n" +
+            "Доступные опции:\n" +
+            "-R рекурсивный показ файлов в подкаталогах\n" +
+            "-X сортировка элементов по названию\n" +
+            "-r сортировка в обратном порядке\n" +
+            "-p вывод дерева файлов, используя визуальное оформление\n" +
+            "Доступные варианты аргументов:\n" +
+            "-существующий каталог\n" +
+            "-пустой аргумент (используется корневой каталог)";
 
     private Set<String> options;
 
@@ -96,7 +113,7 @@ public class LsCommand implements Command {
         } else {
             final var root = lsBuildCommand(path);
 
-            // -p вывод дерева файлов используя визуальное оформление
+            // -p вывод дерева файлов, используя визуальное оформление
             if (this.options.contains("-p")) {
                 new LineTreePrinter().printTree(root, "");
                 return;

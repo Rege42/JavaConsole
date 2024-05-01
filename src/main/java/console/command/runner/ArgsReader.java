@@ -9,6 +9,8 @@ public class ArgsReader {
     static final Scanner scanner = new Scanner(System.in);
 
     static public String[] readInputStream() {
+
+        CommandListProvider.provideCommandList();
         System.out.print(new PathResolver().getPath() + "> ");
         return scanner.nextLine().split(" ");
     }
