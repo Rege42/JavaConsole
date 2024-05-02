@@ -110,7 +110,7 @@ public class CatRuntime {
             return line;
         }
 
-        return line.replaceAll("\t", "tab");
+        return line.replaceAll(" {3}", "TAB");
 
     }
 
@@ -142,7 +142,7 @@ public class CatRuntime {
     // -e добавление в конец строки символа $
     private void addEndLineSymbol(StringBuilder postfix) {
 
-        if (this.options.contains("-e")) {
+        if (!this.options.contains("-e")) {
             return;
         }
 

@@ -14,13 +14,12 @@ public class CommandExecutor {
                                                 ArgumentsExtractor.extractArguments(args));
 
         execute(commandArgs);
-        
-        State.getInstance().setCommandCall(commandArgs);
     }
 
-    public static void execute(CommandCall commandCall) {
+    public static void execute(CommandCall commandArgs) {
         try {
-            commandCall.getCommand().executeCommand(commandCall.getOptions(), commandCall.getArguments());
+            commandArgs.getCommand().executeCommand(commandArgs.getOptions(), commandArgs.getArguments());
+            State.getInstance().setCommandCall(commandArgs);
         } catch (NullPointerException e) {
             System.out.println("Unknown command");
         }

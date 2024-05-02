@@ -26,6 +26,7 @@ public class EchoCommand implements Command {
         final var bufferedWriter = new BufferedWriter(writer);
         try {
             bufferedWriter.write(message+"\n");
+            bufferedWriter.flush();
             if (writer instanceof FileWriter) {
                 bufferedWriter.close();
             }
